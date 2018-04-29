@@ -3,6 +3,11 @@ package ru.job4j.iterator;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+/**
+ * @author Vladimir Yamnikov (Androedge@gmail.com).
+ * @version $1.0$.
+ * @since 29.04.2018.
+ */
 
 public class IteratorArray implements Iterable {
 
