@@ -28,7 +28,6 @@ public class EvenNumbersIterator implements Iterable {
         public boolean hasNext() {
             index = search(index);
             if (index != -1) {
-                //System.out.println(String.format("Значение из массива: %d", values[index]));
                 index++;
                 return true;
             }
