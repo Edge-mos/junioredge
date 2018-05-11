@@ -1,8 +1,6 @@
 package ru.job4j.simplelinkedlist;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * @author Vladimir Yamnikov (Androedge@gmail.com).
@@ -24,6 +22,7 @@ public class SimpleLinkedList<E> implements Iterable<E> {
         temp.next = this.first;
         this.first = temp;
         this.size++;
+        ++this.modCount;
     }
 
     /**
@@ -32,7 +31,7 @@ public class SimpleLinkedList<E> implements Iterable<E> {
      */
     public void add(E data) {
         if (this.first == null) {
-            addFirst(data);
+            this.addFirst(data);
         } else {
             SimpleLinkedList.Node<E> temp = this.first;
             while (temp.next != null) {
@@ -40,6 +39,7 @@ public class SimpleLinkedList<E> implements Iterable<E> {
             }
             temp.next = new Node<>(data);
             this.size++;
+            ++this.modCount;
         }
     }
 
@@ -51,6 +51,7 @@ public class SimpleLinkedList<E> implements Iterable<E> {
         SimpleLinkedList.Node<E> tmp = this.first;
         this.first = tmp.next;
         this.size--;
+        ++this.modCount;
         return tmp.data;
     }
 
@@ -61,9 +62,9 @@ public class SimpleLinkedList<E> implements Iterable<E> {
      */
     public E delete(int index) {
         if (index == 0) {
-            return deleteFirst();
+            return this.deleteFirst();
         }
-        if (range(index)) {
+        if (this.range(index)) {
             SimpleLinkedList.Node<E> temp = this.first;
             for (int i = 0; i < index - 1; i++) {
                 temp = temp.next;
@@ -71,6 +72,7 @@ public class SimpleLinkedList<E> implements Iterable<E> {
             SimpleLinkedList.Node<E> deleted = temp.next;
             temp.next = temp.next.next;
             this.size--;
+            ++this.modCount;
             return deleted.data;
         }
         return null;
@@ -81,7 +83,7 @@ public class SimpleLinkedList<E> implements Iterable<E> {
      * @return возвращает значение удаляемго элемента.
      */
     public E deleteLast() {
-        return delete(this.size - 1);
+        return this.delete(this.size - 1);
     }
 
     /**
@@ -90,7 +92,7 @@ public class SimpleLinkedList<E> implements Iterable<E> {
      * @return параметризированное значение элемента.
      */
     public E get(int index) {
-        if (range(index)) {
+        if (this.range(index)) {
             SimpleLinkedList.Node<E> temp = this.first;
             for (int i = 0; i < index; i++) {
                 temp = temp.next;
@@ -143,9 +145,13 @@ public class SimpleLinkedList<E> implements Iterable<E> {
     private class GetIterator implements Iterator<E> {
         private int index;
         private int expectedModCount;
-        // TODO: 5/11/18 Разобраться!
-        private SimpleLinkedList.Node<E> lastReturned = SimpleLinkedList.this.first;
+        private SimpleLinkedList.Node<E> lastReturned;
         private SimpleLinkedList.Node<E> nextValue;
+
+        public GetIterator() {
+            this.expectedModCount = SimpleLinkedList.this.modCount;
+            this.lastReturned = SimpleLinkedList.this.first;
+        }
 
         @Override
         public boolean hasNext() {
@@ -154,6 +160,7 @@ public class SimpleLinkedList<E> implements Iterable<E> {
 
         @Override
         public E next() {
+            this.checkForModification();
             if (this.index == 0) {
                 this.index++;
                 return this.lastReturned.data;
@@ -165,6 +172,12 @@ public class SimpleLinkedList<E> implements Iterable<E> {
                 this.index++;
                 this.lastReturned = this.nextValue;
                 return this.lastReturned.data;
+            }
+        }
+
+        final void checkForModification() {
+            if (SimpleLinkedList.this.modCount != this.expectedModCount) {
+                throw new ConcurrentModificationException();
             }
         }
     }

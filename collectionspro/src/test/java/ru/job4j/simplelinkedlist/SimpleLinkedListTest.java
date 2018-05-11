@@ -3,6 +3,7 @@ package ru.job4j.simplelinkedlist;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -70,5 +71,14 @@ public class SimpleLinkedListTest {
         assertThat(it.next(), is(1));
         assertThat(it.hasNext(), is(false));
         assertThat(it.next(), is(0));
+    }
+
+    @Test(expected = ConcurrentModificationException.class)
+    public void whenChangeListDuringIterationTnanGetExeption() {
+        Iterator<Integer> it = list.iterator();
+        while (it.hasNext()) {
+            list.deleteFirst();
+            it.next();
+        }
     }
 }

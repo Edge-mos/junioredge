@@ -4,6 +4,7 @@ import org.junit.Test;
 import ru.job4j.generics.SimpleArray;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -86,4 +87,15 @@ public class SimpleArrayTest {
         assertThat(it.hasNext(), is(false));
     }
 
+    @Test(expected = ConcurrentModificationException.class)
+    public void whenChangeListDuringIterationTnanGetExeption() {
+        SimpleArray<String> sa = new SimpleArray<>(3);
+        sa.add("one");
+        sa.add("two");
+        sa.add("three");
+        Iterator it = sa.iterator();
+        for (String s : sa) {
+            sa.add(s);
+        }
+    }
 }

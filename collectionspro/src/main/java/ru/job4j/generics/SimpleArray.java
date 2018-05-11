@@ -1,6 +1,7 @@
 package ru.job4j.generics;
 
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 /**
@@ -9,40 +10,43 @@ import java.util.Iterator;
  * @since 01.05.2018.
  */
 public class SimpleArray<T> implements Iterable<T> {
-
    private Object[] values;
    private int index;
+   private int modCount = 0;
 
-    public SimpleArray(int capasity) {
-        this.values = new Object[capasity];
+    public SimpleArray(int capacity) {
+        this.values = new Object[capacity];
     }
-
 
     public void add(T model) {
         if (this.size() < this.values.length) {
             this.values[this.index++] = model;
+            ++this.modCount;
         } else {
            this.values =  Arrays.copyOf(this.values, this.size() * 2);
             this.values[this.index++] = model;
+            ++this.modCount;
         }
     }
 
     public void set(int position, T model) {
-        if (range(position)) {
+        if (this.range(position)) {
             this.values[position] = model;
             this.index++;
+            ++this.modCount;
         }
     }
 
     public void delete(int position) {
-        if (range(position)) {
+        if (this.range(position)) {
             System.arraycopy(this.values, position + 1, this.values, position, this.values.length - position - 1);
             this.index--;
+            ++this.modCount;
         }
     }
 
     public T get(int index) {
-      return range(index) ? ((T) this.values[index]) : null;
+      return this.range(index) ? ((T) this.values[index]) : null;
     }
 
     public int size() {
@@ -74,6 +78,11 @@ public class SimpleArray<T> implements Iterable<T> {
 
     private class GetIterator implements Iterator<T> {
         private int itIndex;
+        private int expectedModCount;
+
+        public GetIterator() {
+            this.expectedModCount = SimpleArray.this.modCount;
+        }
 
         @Override
         public boolean hasNext() {
@@ -82,7 +91,14 @@ public class SimpleArray<T> implements Iterable<T> {
 
         @Override
         public T next() {
+            this.checkForModification();
             return ((T) values[itIndex++]);
+        }
+
+        final void checkForModification() {
+            if (SimpleArray.this.modCount != this.expectedModCount) {
+                throw new ConcurrentModificationException();
+            }
         }
     }
 }
