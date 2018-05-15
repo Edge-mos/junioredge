@@ -10,54 +10,54 @@ import java.util.Iterator;
  * @since 01.05.2018.
  */
 public class SimpleArray<T> implements Iterable<T> {
-   private Object[] values;
-   private int index;
-   private int modCount = 0;
+    private Object[] values;
+    private int index;
+    private int modCount = 0;
 
     public SimpleArray(int capacity) {
         this.values = new Object[capacity];
     }
 
     public void add(T model) {
-        if (this.size() < this.values.length) {
-            this.values[this.index++] = model;
-            ++this.modCount;
-        } else {
-           this.values =  Arrays.copyOf(this.values, this.size() * 2);
-            this.values[this.index++] = model;
-            ++this.modCount;
-        }
+        this.checkCapacity();
+        this.values[this.index++] = model;
+        ++this.modCount;
     }
 
     public void set(int position, T model) {
-        if (this.range(position)) {
-            this.values[position] = model;
-            this.index++;
-            ++this.modCount;
-        }
+        this.range(position);
+        this.values[position] = model;
+        ++this.modCount;
+
     }
 
     public void delete(int position) {
-        if (this.range(position)) {
-            System.arraycopy(this.values, position + 1, this.values, position, this.values.length - position - 1);
-            this.index--;
-            ++this.modCount;
-        }
+        this.range(position);
+        System.arraycopy(this.values, position + 1, this.values, position, this.values.length - 1 - position);
+        this.values[this.values.length - 1] = null;
+        this.index--;
+        ++this.modCount;
     }
 
     public T get(int index) {
-      return this.range(index) ? ((T) this.values[index]) : null;
+        this.range(index);
+        return ((T) this.values[index]);
     }
 
     public int size() {
         return this.index;
     }
 
-    private boolean range(int index) {
-      if (index < 0 || index > this.index) {
-          throw new IndexOutOfBoundsException(String.format("Index: %d, Size: %d", index, size()));
-      }
-      return true;
+    private void checkCapacity() {
+        if (this.size() >= this.values.length) {
+            this.values =  Arrays.copyOf(this.values, this.size() * 2);
+        }
+    }
+
+    private void range(int index) {
+        if (index < 0 || index > this.index) {
+            throw new IndexOutOfBoundsException(String.format("Index: %d, Size: %d", index, size()));
+        }
     }
 
     @Override
@@ -86,7 +86,7 @@ public class SimpleArray<T> implements Iterable<T> {
 
         @Override
         public boolean hasNext() {
-            return itIndex < values.length;
+            return itIndex < SimpleArray.this.size();
         }
 
         @Override

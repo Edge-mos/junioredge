@@ -61,10 +61,10 @@ public class SimpleLinkedList<E> implements Iterable<E> {
      * @return возвращает значение удаляемого элемента.
      */
     public E delete(int index) {
+        this.range(index);
         if (index == 0) {
             return this.deleteFirst();
-        }
-        if (this.range(index)) {
+        } else {
             SimpleLinkedList.Node<E> temp = this.first;
             for (int i = 0; i < index - 1; i++) {
                 temp = temp.next;
@@ -75,7 +75,6 @@ public class SimpleLinkedList<E> implements Iterable<E> {
             ++this.modCount;
             return deleted.data;
         }
-        return null;
     }
 
     /**
@@ -92,14 +91,12 @@ public class SimpleLinkedList<E> implements Iterable<E> {
      * @return параметризированное значение элемента.
      */
     public E get(int index) {
-        if (this.range(index)) {
-            SimpleLinkedList.Node<E> temp = this.first;
-            for (int i = 0; i < index; i++) {
-                temp = temp.next;
-            }
-            return temp.data;
+        this.range(index);
+        SimpleLinkedList.Node<E> temp = this.first;
+        for (int i = 0; i < index; i++) {
+            temp = temp.next;
         }
-        return null;
+        return temp.data;
     }
 
     /**
@@ -110,11 +107,10 @@ public class SimpleLinkedList<E> implements Iterable<E> {
         return this.size;
     }
 
-    private boolean range(int index) {
+    private void range(int index) {
         if (index < 0 || index >= this.size) {
             throw new NoSuchElementException(String.format("Index: %d, Size: %d", index, this.size));
         }
-        return true;
     }
 
     @Override

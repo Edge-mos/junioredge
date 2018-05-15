@@ -5,5 +5,5 @@ import ru.job4j.store.interfases.implemented.AbstractStore;
  * @version $1.0$.
  * @since 07.05.2018.
  */
-public class RoleStore extends AbstractStore {
+public class RoleStore<T extends Base> extends AbstractStore<T> {
 }

@@ -54,7 +54,7 @@ public class SimpleArrayTest {
 
     @Test
     public void whenDeleteItemThanOtherElementsDecrementTheirIndexes() {
-        SimpleArray<String> sa = new SimpleArray<>(1);
+        SimpleArray<String> sa = new SimpleArray<>(3);
         sa.add("zero");
         sa.add("one");
         sa.add("two");
@@ -63,12 +63,14 @@ public class SimpleArrayTest {
     }
 
     @Test
-    public void test() {
-        SimpleArray<String> sa = new SimpleArray<>(1);
+    public void whenNoNullToConsole() {
+        SimpleArray<String> sa = new SimpleArray<>(10);
         sa.add("zero");
         sa.add("one");
         sa.add("two");
-        sa.delete(0);
+        for (String s : sa) {
+            System.out.println(s);
+        }
     }
 
     @Test
