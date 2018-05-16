@@ -26,46 +26,48 @@ public class PrimeNumbersIterator implements Iterable {
 
     private class GetIterator implements Iterator {
         private int index;
-        private int getIndex;
+        private int[] array = PrimeNumbersIterator.this.values;
 
         @Override
         public boolean hasNext() {
-            for (int i = index; i < values.length; i++) {
-                if (search(values[i])) {
-                    index = i;
-                    index++;
-                    return true;
-                }
-            }
-            return false;
+            return this.search();
         }
 
         @Override
         public Object next() {
-            for (int i = getIndex; i < values.length; i++) {
-                if (search(values[i])) {
-                    return values[getIndex++];
-                } else {
-                    getIndex++;
-                }
+            if (this.hasNext()) {
+                return PrimeNumbersIterator.this.values[index++];
+            } else {
+                throw new NoSuchElementException();
             }
-            throw new NoSuchElementException();
+
         }
 
-        private boolean search(int number) {
-            boolean result = true;
-            if (number == 2) {
+        private boolean search() {
+            for (int i = this.index; i < array.length; i++) {
+                if (array[i] < 2) {
+                    continue;
+                }
+                if (array[i] == 2) {
+                    this.index = i;
+                    return true;
+                }
+                if (array[i] % 2 == 0) {
+                    continue;
+                }
+                int value = array[i];
+                for (int j = 2; j <= sqrt(value); j++) {
+                    if (j % 2 == 0) {
+                        continue;
+                    }
+                    if (value % j == 0) {
+                        break;
+                    }
+                }
+                this.index = i;
                 return true;
             }
-            if (number < 2) {
-                return false;
-            }
-            for (int i = 1; i <= sqrt(number); i++) {
-                if (number % 2 == 0) {
-                    result =  false;
-                }
-            }
-            return result;
+            return false;
         }
     }
 }

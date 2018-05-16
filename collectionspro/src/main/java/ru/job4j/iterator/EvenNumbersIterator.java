@@ -22,34 +22,29 @@ public class EvenNumbersIterator implements Iterable {
 
     private class GetIterator implements Iterator {
         private int index;
-        private int getIndex;
 
         @Override
         public boolean hasNext() {
-            index = search(index);
-            if (index != -1) {
-                index++;
-                return true;
-            }
-            return false;
+            return this.search();
         }
 
         @Override
         public Object next() {
-            getIndex = search(getIndex);
-            if (getIndex != -1) {
-               return values[getIndex++];
+            if (this.hasNext()) {
+                return EvenNumbersIterator.this.values[index++];
+            } else {
+                throw new NoSuchElementException();
             }
-            throw new NoSuchElementException();
         }
 
-        private int search(int searchIndex) {
-            for (int i = searchIndex; i < values.length; i++) {
-                if (values[i] % 2 == 0) {
-                    return i;
+        private boolean search() {
+            for (int i = this.index; i < EvenNumbersIterator.this.values.length; i++) {
+                if (EvenNumbersIterator.this.values[i] % 2 == 0) {
+                    this.index = i;
+                    return true;
                 }
             }
-            return -1;
+            return false;
         }
     }
 }
