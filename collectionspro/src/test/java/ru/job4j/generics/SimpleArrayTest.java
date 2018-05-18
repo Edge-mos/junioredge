@@ -6,6 +6,8 @@ import ru.job4j.generics.SimpleArray;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -99,5 +101,23 @@ public class SimpleArrayTest {
         for (String s : sa) {
             sa.add(s);
         }
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void whenNoElementToReturnThanExeption() {
+        SimpleArray<String> sa = new SimpleArray<>(3);
+        sa.add("one");
+        sa.add("two");
+        sa.add("three");
+        Iterator<String> it = sa.iterator();
+
+        assertThat(it.hasNext(), is(true));
+        assertThat(it.next(), is("one"));
+        assertThat(it.hasNext(), is(true));
+        assertThat(it.next(), is("two"));
+        assertThat(it.hasNext(), is(true));
+        assertThat(it.next(), is("three"));
+        assertThat(it.hasNext(), is(false));
+        it.next();
     }
 }

@@ -3,6 +3,7 @@ package ru.job4j.generics;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * @author Vladimir Yamnikov (Androedge@gmail.com).
@@ -92,7 +93,11 @@ public class SimpleArray<T> implements Iterable<T> {
         @Override
         public T next() {
             this.checkForModification();
-            return ((T) values[itIndex++]);
+            if (this.hasNext()) {
+                return ((T) values[itIndex++]);
+            }
+            throw new NoSuchElementException();
+
         }
 
         final void checkForModification() {
