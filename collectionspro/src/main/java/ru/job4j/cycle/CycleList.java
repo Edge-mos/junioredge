@@ -7,14 +7,11 @@ public class CycleList<T> {
        if (first == null) {
            return false;
        }
-
        Node<T> slow, fast;
        slow = first;
        fast = first;
-
        while (true) {
            slow = slow.next;
-
            if (fast.next != null) {
                fast = fast.next.next;
            } else {

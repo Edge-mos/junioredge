@@ -24,20 +24,20 @@ public class LinkedSet<T> implements Iset<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new GetIterator();
+        return this.values.iterator();
     }
 
-    private class GetIterator implements Iterator<T> {
-        private Iterator<T> it = LinkedSet.this.values.iterator();
-
-        @Override
-        public boolean hasNext() {
-            return this.it.hasNext();
-        }
-
-        @Override
-        public T next() {
-            return this.it.next();
-        }
-    }
+//    private class GetIterator implements Iterator<T> {
+//        private Iterator<T> it = LinkedSet.this.values.iterator();
+//
+//        @Override
+//        public boolean hasNext() {
+//            return this.it.hasNext();
+//        }
+//
+//        @Override
+//        public T next() {
+//            return this.it.next();
+//        }
+//    }
 }

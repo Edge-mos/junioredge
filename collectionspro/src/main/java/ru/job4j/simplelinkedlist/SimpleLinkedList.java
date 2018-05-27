@@ -142,7 +142,6 @@ public class SimpleLinkedList<E> implements Iterable<E> {
         private int index;
         private int expectedModCount;
         private SimpleLinkedList.Node<E> lastReturned;
-        private SimpleLinkedList.Node<E> nextValue;
 
         public GetIterator() {
             this.expectedModCount = SimpleLinkedList.this.modCount;
@@ -157,18 +156,16 @@ public class SimpleLinkedList<E> implements Iterable<E> {
         @Override
         public E next() {
             this.checkForModification();
-            if (this.index == 0) {
+            if (this.hasNext()) {
+                if (this.index == 0) {
+                    this.index++;
+                    return this.lastReturned.data;
+                }
+                this.lastReturned = this.lastReturned.next;
                 this.index++;
                 return this.lastReturned.data;
             }
-            if (!this.hasNext()) {
-                throw new NoSuchElementException();
-            } else {
-                this.nextValue = this.lastReturned.next;
-                this.index++;
-                this.lastReturned = this.nextValue;
-                return this.lastReturned.data;
-            }
+            throw new NoSuchElementException();
         }
 
         final void checkForModification() {

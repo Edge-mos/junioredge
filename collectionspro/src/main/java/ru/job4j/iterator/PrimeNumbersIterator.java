@@ -37,10 +37,8 @@ public class PrimeNumbersIterator implements Iterable {
         public Object next() {
             if (this.hasNext()) {
                 return PrimeNumbersIterator.this.values[index++];
-            } else {
-                throw new NoSuchElementException();
             }
-
+            throw new NoSuchElementException();
         }
 
         private boolean search() {
