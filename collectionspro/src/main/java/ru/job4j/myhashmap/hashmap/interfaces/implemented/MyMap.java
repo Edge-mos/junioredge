@@ -239,7 +239,7 @@ public class MyMap<K, V> implements SimpleMap<K, V> {
 
         @Override
         public String toString() {
-            return key + "=" + value;
+            return key + "->" + value;
         }
     }
     private class GetIterator implements Iterator<MyMap.Node<K, V>> {
