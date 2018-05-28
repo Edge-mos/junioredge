@@ -2,7 +2,7 @@ package ru.job4j.myhashmap.hashmap.interfaces.implemented;
 
 import org.junit.Before;
 import org.junit.Test;
-import ru.job4j.myhashmap.hashmap.interfaces.SimpleMap;
+import ru.job4j.myhashmap.hashmap.interfaces.Imap;
 
 import java.util.*;
 
@@ -11,10 +11,10 @@ import static java.lang.Math.abs;
 import static org.junit.Assert.*;
 
 
-public class MyMapTest {
-    private SimpleMap<User, Integer> map;
-    private SimpleMap<User, Integer> map2;
-    private SimpleMap<User, Integer> map3;
+public class ImapTest {
+    private Imap<User, Integer> map;
+    private Imap<User, Integer> map2;
+    private Imap<User, Integer> map3;
     private User user1 = new User("Ivan", 1);
     private User user2 = new User("ivAn", 1);
     private User user3 = new User("ivan", 1);
@@ -70,9 +70,9 @@ public class MyMapTest {
 
     @Before
     public void setup() {
-        map = new MyMap<>();
-        map2 = new MyMap<>(0);
-        map3 = new MyMap<>(1, 0.20);
+        map = new SimpleMap<>();
+        map2 = new SimpleMap<>(0);
+        map3 = new SimpleMap<>(1, 0.20);
 
     }
     @Test
@@ -114,15 +114,19 @@ public class MyMapTest {
         map.insert(user7, 77);
         map.insert(user6, 88);
 
+        SimpleMap.Node<User, Integer> node1 = new SimpleMap.Node<>(user1.hashCode(), user1, 11);
+        SimpleMap.Node<User, Integer> node2 = new SimpleMap.Node<>(user2.hashCode(), user2, 22);
+        SimpleMap.Node<User, Integer> node7 = new SimpleMap.Node<>(user7.hashCode(), user7, 77);
+        SimpleMap.Node<User, Integer> node6 = new SimpleMap.Node<>(user6.hashCode(), user6, 88);
         Iterator it = map.iterator();
         assertThat(it.hasNext(), is(true));
-        assertThat(it.next().hashCode(), is(user1.hashCode()));
+        assertThat(it.next(), is(node1));
         assertThat(it.hasNext(), is(true));
-        assertThat(it.next().hashCode(), is(user2.hashCode()));
+        assertThat(it.next(), is(node2));
         assertThat(it.hasNext(), is(true));
-        assertThat(it.next().hashCode(), is(user7.hashCode()));
+        assertThat(it.next(), is(node7));
         assertThat(it.hasNext(), is(true));
-        assertThat(it.next().hashCode(), is(user6.hashCode()));
+        assertThat(it.next(), is(node6));
         it.next();
     }
 
@@ -147,5 +151,13 @@ public class MyMapTest {
         map.clear();
         assertThat(map.isEmpty(), is(true));
         assertThat(map.size(), is(0));
+    }
+    @Test
+    public void whenNoElementsInMapThanFalseAndSizeIsZero() {
+        Imap<User, Integer> testMap = new SimpleMap<>();
+        Iterator it = testMap.iterator();
+        assertThat(it.hasNext(), is(false));
+        assertThat(testMap.isEmpty(), is(true));
+        assertThat(testMap.size(), is(0));
     }
 }

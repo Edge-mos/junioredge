@@ -1,7 +1,7 @@
 package ru.job4j.set.interfaces.implemented;
 
-import ru.job4j.myhashmap.hashmap.interfaces.SimpleMap;
-import ru.job4j.myhashmap.hashmap.interfaces.implemented.MyMap;
+import ru.job4j.myhashmap.hashmap.interfaces.Imap;
+import ru.job4j.myhashmap.hashmap.interfaces.implemented.SimpleMap;
 import ru.job4j.set.interfaces.IHashSet;
 
 import java.util.Arrays;
@@ -9,11 +9,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class SimpleHashSet<K> implements IHashSet<K> {
-    private SimpleMap<K, Object> values;
+    private Imap<K, Object> values;
     //private final static Object dummy = new Object();
 
     public SimpleHashSet() {
-        this.values = new MyMap<>();
+        this.values = new SimpleMap<>();
     }
 
     @Override

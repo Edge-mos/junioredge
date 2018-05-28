@@ -1,6 +1,7 @@
 package ru.job4j.myhashmap.hashmap.interfaces.implemented;
 
-import ru.job4j.myhashmap.hashmap.interfaces.SimpleMap;
+import ru.job4j.myhashmap.hashmap.interfaces.Imap;
+
 import static java.lang.Math.abs;
 
 import java.util.*;
@@ -10,32 +11,31 @@ import java.util.*;
  * @version $1.0$.
  * @since 25.05.2018.
  */
-public class MyMap<K, V> implements SimpleMap<K, V> {
-    private MyMap.Node<K, V>[] table;
+public class SimpleMap<K, V> implements Imap<K, V> {
+    private SimpleMap.Node<K, V>[] table;
     private final int initialCap = 16;
     private int currentCapacity;
     private double loadFactor;
     private int threshold;
     private int size;
-    private int modCount;
 
-    public MyMap() {
-        this.table = new MyMap.Node[this.initialCap];
+    public SimpleMap() {
+        this.table = new SimpleMap.Node[this.initialCap];
         this.currentCapacity = this.initialCap;
         this.loadFactor = 0.75;
         this.threshold = this.setThreshold();
     }
 
-    public MyMap(int currentCapacity) {
+    public SimpleMap(int currentCapacity) {
         this.currentCapacity = this.checkCurrentCapacity();
-        this.table = new MyMap.Node[this.currentCapacity];
+        this.table = new SimpleMap.Node[this.currentCapacity];
         this.loadFactor = 0.75;
         this.threshold = this.setThreshold();
     }
 
-    public MyMap(int currentCapacity, double loadFactor) {
+    public SimpleMap(int currentCapacity, double loadFactor) {
         this.currentCapacity = this.checkCurrentCapacity();
-        this.table = new MyMap.Node[this.currentCapacity];
+        this.table = new SimpleMap.Node[this.currentCapacity];
         this.loadFactor = this.checkLoadFactor();
         this.threshold = this.setThreshold();
     }
@@ -43,7 +43,7 @@ public class MyMap<K, V> implements SimpleMap<K, V> {
     @Override
     public boolean insert(K key, V value) {
         if (key != null) {
-            MyMap.Node<K, V> tmp = new MyMap.Node<>(key.hashCode(), key, value);
+            SimpleMap.Node<K, V> tmp = new SimpleMap.Node<>(key.hashCode(), key, value);
             int index = this.getTableIndex(tmp);
             this.tableInsert(index, tmp);
             this.thresholdCheck();
@@ -52,15 +52,14 @@ public class MyMap<K, V> implements SimpleMap<K, V> {
         return false;
     }
 
-    private void tableInsert(int index, MyMap.Node<K, V> node) {
+    private void tableInsert(int index, SimpleMap.Node<K, V> node) {
         if (this.table[index] == null) {
             this.table[index] = node;
             this.size++;
-            ++this.modCount;
             return;
         }
-        MyMap.Node<K, V> tmp = this.table[index];
-        MyMap.Node<K, V> last = null;
+        SimpleMap.Node<K, V> tmp = this.table[index];
+        SimpleMap.Node<K, V> last = null;
         while (tmp != null) {
             if (this.isSameKey(tmp, node)) {
                 this.swap(tmp, node);
@@ -72,14 +71,13 @@ public class MyMap<K, V> implements SimpleMap<K, V> {
         }
         last.next = node;
         this.size++;
-        ++this.modCount;
     }
 
     private boolean isSameKey(Object current, Object node) {
         return current.hashCode() == node.hashCode() && current.equals(node);
     }
 
-    private void swap(MyMap.Node<K, V> current, MyMap.Node<K, V> node) {
+    private void swap(SimpleMap.Node<K, V> current, SimpleMap.Node<K, V> node) {
         current.hash = node.hash;
         current.value = node.value;
     }
@@ -91,7 +89,7 @@ public class MyMap<K, V> implements SimpleMap<K, V> {
     private void thresholdCheck() {
         if (this.size > this.threshold) {
             this.currentCapacity *= 2;
-            MyMap.Node<K, V>[] copied = this.copy();
+            SimpleMap.Node<K, V>[] copied = this.copy();
             this.clear();
             for (Node<K, V> oldNode : copied) {
                 this.insert(oldNode.key, oldNode.value);
@@ -112,8 +110,8 @@ public class MyMap<K, V> implements SimpleMap<K, V> {
         return (this.loadFactor < 0) ? (0.50) : (this.loadFactor);
     }
 
-    private  MyMap.Node<K, V>[] copy() {
-        MyMap.Node<K, V>[] oldTable = new MyMap.Node[this.size];
+    private  SimpleMap.Node<K, V>[] copy() {
+        SimpleMap.Node<K, V>[] oldTable = new SimpleMap.Node[this.size];
         int index = 0;
         for (Node<K, V> node : this.table) {
             if (node != null) {
@@ -130,7 +128,7 @@ public class MyMap<K, V> implements SimpleMap<K, V> {
     public V get(K key) {
         if (key != null) {
             int index = this.getTableIndex(key);
-            MyMap.Node<K, V> tmp = this.table[index];
+            SimpleMap.Node<K, V> tmp = this.table[index];
             while (tmp != null) {
                 if (this.isSameKey(tmp.key, key)) {
                     return tmp.value;
@@ -145,8 +143,8 @@ public class MyMap<K, V> implements SimpleMap<K, V> {
     @Override
     public boolean delete(K key) {
         int index = this.getTableIndex(key);
-        MyMap.Node<K, V> tmp = this.table[index];
-        MyMap.Node<K, V> last = tmp;
+        SimpleMap.Node<K, V> tmp = this.table[index];
+        SimpleMap.Node<K, V> last = tmp;
         if (tmp != null) {
             while (tmp != null) {
                 if (this.isSameKey(tmp.key, key)) {
@@ -161,12 +159,10 @@ public class MyMap<K, V> implements SimpleMap<K, V> {
                     this.table[index] = last.next;
                     tmp = null;
                     this.size--;
-                    ++this.modCount;
                 } else {
                     last.next = last.next.next;
                     tmp = null;
                     this.size--;
-                    ++this.modCount;
                 }
                 return true;
             }
@@ -187,10 +183,9 @@ public class MyMap<K, V> implements SimpleMap<K, V> {
     @Override
     public void clear() {
         if (!this.isEmpty()) {
-            this.table = new MyMap.Node[this.currentCapacity];
+            this.table = new SimpleMap.Node[this.currentCapacity];
             this.threshold = this.setThreshold();
             this.size = 0;
-            this.modCount = 0;
         }
     }
 
@@ -204,7 +199,7 @@ public class MyMap<K, V> implements SimpleMap<K, V> {
         return new GetIterator();
     }
 
-    private static class Node<K, V> {
+    public static class Node<K, V> {
         private int hash;
         private K key;
         private V value;
@@ -242,49 +237,44 @@ public class MyMap<K, V> implements SimpleMap<K, V> {
             return key + "->" + value;
         }
     }
-    private class GetIterator implements Iterator<MyMap.Node<K, V>> {
-        private MyMap.Node<K, V>[] values;
+    private class GetIterator implements Iterator<SimpleMap.Node<K, V>> {
+        private SimpleMap.Node<K, V>[] values;
         private int tableIndex;
-        private MyMap.Node<K, V> cursorNode;
-        private MyMap.Node<K, V> currentNode;
-        private MyMap.Node<K, V> temp;
+        private SimpleMap.Node<K, V> cursorNode;
+        private SimpleMap.Node<K, V> temp;
         private int expectedModCount;
 
         public GetIterator() {
-            this.values = MyMap.this.table;
+            this.values = SimpleMap.this.table;
             this.tableIndex = 0;
             this.cursorNode = this.search();
-            this.currentNode = this.cursorNode;
-            this.expectedModCount = MyMap.this.modCount;
+            this.expectedModCount = SimpleMap.this.size;
         }
 
         @Override
         public boolean hasNext() {
-            return this.tableIndex < this.values.length;
+            return this.tableIndex < this.values.length - 1 && !SimpleMap.this.isEmpty();
         }
 
         @Override
         public Node<K, V> next() {
             this.checkForModification();
             if (this.hasNext()) {
-                if (cursorNode.next == null) {
-                    temp = currentNode;
-                    cursorNode = this.search();
-                    currentNode = cursorNode;
+                if (this.cursorNode.next == null) {
+                    temp = this.cursorNode;
                     this.tableIndex++;
+                    this.cursorNode = this.search();
                     return temp;
                 } else {
-                    cursorNode = cursorNode.next;
-                    temp = currentNode;
-                    currentNode = cursorNode;
-                    this.tableIndex++;
+                    temp = this.cursorNode;
+                    this.cursorNode = cursorNode.next;
                     return temp;
                 }
             }
             throw new NoSuchElementException();
         }
 
-        private MyMap.Node<K, V> search() {
+        private SimpleMap.Node<K, V> search() {
             for (int i = this.tableIndex; i < this.values.length; i++) {
                 if (this.values[i] != null) {
                     this.tableIndex = i;
@@ -296,7 +286,7 @@ public class MyMap<K, V> implements SimpleMap<K, V> {
         }
 
         final void checkForModification() {
-            if (MyMap.this.modCount != this.expectedModCount) {
+            if (SimpleMap.this.size != this.expectedModCount) {
                 throw new ConcurrentModificationException();
             }
         }
