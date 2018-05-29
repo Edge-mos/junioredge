@@ -90,6 +90,14 @@ public class ImapTest {
     }
 
     @Test
+    public void test() {
+       Map<User, Integer> jmap = new HashMap<>();
+       jmap.put(user7, 77);
+       jmap.put(user1, 11);
+
+    }
+
+    @Test
     public void whenAddSameElementsThanLastElementOverridesPrevios() {
         map.insert(user4, 444);
         map.insert(user5, 555);

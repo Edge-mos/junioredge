@@ -3,16 +3,18 @@ package ru.job4j.set.interfaces.implemented;
 import org.junit.Before;
 import org.junit.Test;
 import ru.job4j.set.interfaces.IHashSet;
-
-import java.util.HashSet;
-import java.util.Set;
-
+import static org.hamcrest.CoreMatchers.is;
 import static java.lang.Math.abs;
 import static org.junit.Assert.*;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import static java.lang.Math.abs;
+
 
 public class SimpleHashSetTest {
-    private IHashSet<User> myHashSet;
+    private IHashSet<User> simpleHashSet;
 
     class User {
         private String name;
@@ -61,31 +63,45 @@ public class SimpleHashSetTest {
 
     @Before
     public void setup() {
-        this.myHashSet = new SimpleHashSet<>();
+        this.simpleHashSet = new SimpleHashSet<>();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void iteratorTest() {
+        User user1 = new User("Test", 1);
+        User user2 = new User("Test2", 2);
+        User user3 = new User("Test3", 3);
+
+        simpleHashSet.add(user1);
+        simpleHashSet.add(user2);
+        simpleHashSet.add(user3);
+
+        Iterator<User> it = simpleHashSet.iterator();
+        assertThat(it.hasNext(), is(true));
+        assertThat(it.next(), is(new User("Test", 1)));
+        assertThat(it.hasNext(), is(true));
+        assertThat(it.next(), is(new User("Test2", 2)));
+        assertThat(it.hasNext(), is(true));
+        assertThat(it.next(), is(new User("Test3", 3)));
+        assertThat(it.hasNext(), is(false));
+        it.next();
     }
 
     @Test
-    public void test() {
-
+    public void whenAddElementThanContainsTrue() {
         User user1 = new User("Test", 1);
-        System.out.println(myHashSet.add(user1));
+        assertThat(simpleHashSet.add(user1), is(true));
+        User user2 = new User("Petr", 1);
+        assertThat(simpleHashSet.contains(user2), is(false));
+    }
 
-        User user2 = new User("Test2", 2);
+    @Test
+    public void whenDeleteUserFromSetTnanContainsFalse() {
+        User user1 = new User("Test", 1);
+        simpleHashSet.add(user1);
 
-        System.out.println(myHashSet.add(user2));
-
-        for (Object user : myHashSet) {
-            System.out.println(user);
-        }
-
-
-
-
-//        Set<User> set = new HashSet<>();
-//        System.out.println(set.add(user1));
-//        System.out.println(set.add(user2));
-//        System.out.println(set.remove(user1));
-//        System.out.println(set.remove(user1));
+        assertThat(simpleHashSet.remove(user1), is(true));
+        assertThat(simpleHashSet.contains(user1), is(false));
     }
 
 

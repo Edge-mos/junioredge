@@ -65,11 +65,7 @@ public class SimpleArray<T> implements Iterable<T> {
     public String toString() {
         Object[] result = new Object[this.index];
         System.arraycopy(this.values, 0, result, 0, this.index);
-        return "SimpleArray [ "
-                +
-                Arrays.toString(result)
-                +
-                " ]";
+        return Arrays.toString(result);
     }
 
     @Override

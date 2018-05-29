@@ -1,6 +1,9 @@
 package ru.job4j.myhashmap.hashmap.interfaces.implemented;
 
+import ru.job4j.generics.SimpleArray;
 import ru.job4j.myhashmap.hashmap.interfaces.Imap;
+import ru.job4j.set.interfaces.implemented.SimpleSet;
+import ru.job4j.simplelinkedlist.SimpleLinkedList;
 
 import static java.lang.Math.abs;
 
@@ -18,6 +21,7 @@ public class SimpleMap<K, V> implements Imap<K, V> {
     private double loadFactor;
     private int threshold;
     private int size;
+    private SimpleSet<K> keyset = new SimpleSet<>();
 
     public SimpleMap() {
         this.table = new SimpleMap.Node[this.initialCap];
@@ -47,6 +51,7 @@ public class SimpleMap<K, V> implements Imap<K, V> {
             int index = this.getTableIndex(tmp);
             this.tableInsert(index, tmp);
             this.thresholdCheck();
+            this.keyset.add(key);
             return true;
         }
         return false;
@@ -190,6 +195,22 @@ public class SimpleMap<K, V> implements Imap<K, V> {
     }
 
     @Override
+    public SimpleSet<K> keySet() {
+        return this.keyset;
+    }
+
+    @Override
+    public SimpleLinkedList<V> values() {
+        SimpleLinkedList<V> values = new SimpleLinkedList<>();
+        for (Node<K, V> node : this.table) {
+            if (node != null) {
+                values.add(node.value);
+            }
+        }
+        return values;
+    }
+
+    @Override
     public String toString() {
         return Arrays.toString(this.copy());
     }
@@ -197,6 +218,7 @@ public class SimpleMap<K, V> implements Imap<K, V> {
     @Override
     public Iterator iterator() {
         return new GetIterator();
+
     }
 
     public static class Node<K, V> {
@@ -237,7 +259,9 @@ public class SimpleMap<K, V> implements Imap<K, V> {
             return key + "->" + value;
         }
     }
-    private class GetIterator implements Iterator<SimpleMap.Node<K, V>> {
+
+
+    private class GetIterator  implements Iterator<SimpleMap.Node<K, V>> {
         private SimpleMap.Node<K, V>[] values;
         private int tableIndex;
         private SimpleMap.Node<K, V> cursorNode;

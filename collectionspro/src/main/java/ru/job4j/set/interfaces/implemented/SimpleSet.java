@@ -25,6 +25,11 @@ public class SimpleSet<T> implements Iset<T> {
     }
 
     @Override
+    public String toString() {
+        return this.values.toString();
+    }
+
+    @Override
     public Iterator<T> iterator() {
         return this.values.iterator();
     }
