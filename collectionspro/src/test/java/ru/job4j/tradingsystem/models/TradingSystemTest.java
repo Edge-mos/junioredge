@@ -29,9 +29,9 @@ public class TradingSystemTest {
     public void whenRemoveAppThanTrueIfPresentIfNotThanFalse() {
         ts.setAppInSys(new Application("sber", "bid", 214., 1000));
         ts.setAppInSys(new Application("sber", "ask", 221, 500));
-        assertThat(ts.removeAppFromSys(112, "sber", "ask"), is(true));
-        assertThat(ts.removeAppFromSys(111, "sber", "bid"), is(true));
-        assertThat(ts.removeAppFromSys(5555, "sber", "ask"), is(false));
+        assertThat(ts.removeAppFromSys(new Application(112, "sber", "ask", 221, 500)), is(true));
+        assertThat(ts.removeAppFromSys(new Application(111, "sber", "bid", 214., 1000)), is(true));
+        assertThat(ts.removeAppFromSys(new Application(5555, "sber", "ask", 221, 500)), is(false));
     }
 
 }

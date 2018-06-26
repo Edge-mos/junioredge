@@ -23,6 +23,14 @@ public class Application implements Iapp {
         this.volume = volume;
     }
 
+    public Application(int id, String book, String action, double price, int volume) {
+        this.id = id;
+        this.book = book;
+        this.action = action;
+        this.price = price;
+        this.volume = volume;
+    }
+
     @Override
     public int getId() {
         return this.id;

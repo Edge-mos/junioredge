@@ -1,8 +1,10 @@
 package ru.job4j.tradingsystem.interfaces;
 
-public interface Iquotes {
+public interface Idom {
     void setAplication(Iapp application);
-    boolean removeAplication(int id, String action);
+    boolean removeAplication(Iapp application);
     Iapp getBestBid();
     Iapp getBestAsk();
+    Icell getBestBidCell();
+    Icell getBestAskCell();
 }

@@ -1,8 +1,6 @@
 package ru.job4j.tradingsystem.models;
 
-import ru.job4j.tradingsystem.interfaces.Iapp;
-import ru.job4j.tradingsystem.interfaces.Iquotes;
-import ru.job4j.tradingsystem.interfaces.Processible;
+import ru.job4j.tradingsystem.interfaces.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +16,7 @@ public class TradingSystem implements Processible {
     /**
      * Хранилище "стаканов" с котировками в системе.
      */
-    private Map<String, Iquotes> tradingQuotes = new HashMap<>();
+    private Map<String, Idom> doms = new HashMap<>();
     /**
      * Статическая переменная, отвечающая за присвоение id заявкам.
      */
@@ -30,7 +28,7 @@ public class TradingSystem implements Processible {
      */
     @Override
     public void setAppInSys(Iapp application) {
-        Iquotes search = this.tradingQuotes.get(application.getBook());
+        Idom search = this.doms.get(application.getBook());
         if (search != null) {
             application.setId(TradingSystem.appId++);
             search.setAplication(application);
@@ -39,15 +37,13 @@ public class TradingSystem implements Processible {
 
     /**
      * Удаление заявки из системы(стакана)
-     * @param id номер заявки в системе.
-     * @param book тикер.
-     * @param action сторона сделки(покупка/продажа)
+     * @param application заявка.
      * @return true, в случае обнаружения и снятия заявки, false в случае отсутствия.
      */
     @Override
-    public boolean removeAppFromSys(int id, String book, String action) {
-        Iquotes search = this.tradingQuotes.get(book.toUpperCase());
-        return search != null && search.removeAplication(id, action);
+    public boolean removeAppFromSys(Iapp application) {
+        Idom search = this.doms.get(application.getBook());
+        return search != null && search.removeAplication(application);
     }
 
     /**
@@ -56,8 +52,8 @@ public class TradingSystem implements Processible {
      */
     @Override
     public void addTradingQuotes(String security) {
-        Iquotes tmp = new Quotes(security);
-        this.tradingQuotes.put(security.toUpperCase(), tmp);
+        Idom tmp = new Dom(security);
+        this.doms.put(security.toUpperCase(), tmp);
     }
 
     /**
@@ -66,7 +62,7 @@ public class TradingSystem implements Processible {
      */
     @Override
     public void showSecurityInfo(String security) {
-        Iquotes search = this.tradingQuotes.get(security.toUpperCase());
+        Idom search = this.doms.get(security.toUpperCase());
         if (search != null) {
             System.out.println(search);
         } else {
