@@ -130,7 +130,7 @@ public class Dom implements Idom {
         StringBuilder sb = new StringBuilder();
         sb.append("     ").append(this.heading).append("\n\n");
         for (Icell icell : this.asks.descendingMap().values()) {
-            sb.append(icell).append("\n");
+            sb.append(icell).append(System.lineSeparator());
         }
         sb.append("------------------------\n");
         for (Icell icell : this.bids.values()) {

@@ -17,17 +17,6 @@ public class RectangleMove implements Runnable {
         this.rectangle.setX(this.rectangle.getX() - 1);
     }
 
-    private void sleepThread() {
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-    public void exit() {
-        Thread.interrupted();
-    }
-
     @Override
     public void run() {
         while (true) {
@@ -39,9 +28,17 @@ public class RectangleMove implements Runnable {
                 this.moveLeft();
                 this.sleepThread();
             }
-            if (Thread.interrupted()) {
-                return;
-            }
+//            if (Thread.currentThread().isInterrupted()) {
+//                System.exit(0);
+//            }
+        }
+    }
+
+    private void sleepThread() {
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
