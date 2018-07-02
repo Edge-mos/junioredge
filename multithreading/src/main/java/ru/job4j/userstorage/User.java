@@ -1,5 +1,12 @@
 package ru.job4j.userstorage;
 
+/**
+ * Модель строки стакана для торгов.
+ * @author Vladimir Yamnikov (Androedge@gmail.com).
+ * @version $1.0$.
+ * @since 01.07.2018.
+ */
+
 public class User {
     private int id;
     private int amount;
@@ -11,6 +18,14 @@ public class User {
 
     public int getId() {
         return this.id;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     @Override

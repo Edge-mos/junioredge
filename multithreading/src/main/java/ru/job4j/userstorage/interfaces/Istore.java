@@ -2,9 +2,12 @@ package ru.job4j.userstorage.interfaces;
 
 import ru.job4j.userstorage.User;
 
+import java.util.SortedMap;
+
 public interface Istore<T extends User> {
     boolean add(T user);
-    boolean update(T user);
+    boolean update(T user, T updated);
     boolean delete(T user);
-    void transfer(T user1, T user2, int amount);
+    boolean transfer(int from, int to, int amount);
+    SortedMap<Integer, T> getStore();
 }
