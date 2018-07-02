@@ -4,6 +4,7 @@ import javafx.scene.shape.Rectangle;
 
 public class RectangleMove implements Runnable {
     private final Rectangle rectangle;
+    private boolean reverse = false;
 
     public RectangleMove(Rectangle rectangle) {
         this.rectangle = rectangle;
@@ -11,26 +12,23 @@ public class RectangleMove implements Runnable {
 
     private void moveRight() {
         this.rectangle.setX(this.rectangle.getX() + 1);
+        this.reverse = this.rectangle.getX() == 300;
     }
 
     private void moveLeft() {
         this.rectangle.setX(this.rectangle.getX() - 1);
+        this.reverse = this.rectangle.getX() != 0;
     }
 
     @Override
     public void run() {
-        while (true) {
-            while (this.rectangle.getX() != 300) {
+        while (!Thread.currentThread().isInterrupted()) {
+            if (!this.reverse) {
                 this.moveRight();
-                this.sleepThread();
-            }
-            while (this.rectangle.getX() != 0) {
+            } else {
                 this.moveLeft();
-                this.sleepThread();
             }
-//            if (Thread.currentThread().isInterrupted()) {
-//                System.exit(0);
-//            }
+            this.sleepThread();
         }
     }
 
@@ -38,7 +36,7 @@ public class RectangleMove implements Runnable {
         try {
             Thread.sleep(50);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
 }

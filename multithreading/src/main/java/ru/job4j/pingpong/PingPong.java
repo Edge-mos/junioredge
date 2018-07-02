@@ -12,7 +12,7 @@ public class PingPong extends Application {
     private static final String JOB4J = "Пинг-понг www.job4j.ru";
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) throws InterruptedException {
         int limitX = 310;
         int limitY = 300;
         Group group = new Group();
@@ -24,7 +24,6 @@ public class PingPong extends Application {
         primaryStage.setTitle(JOB4J);
         primaryStage.setResizable(false);
         primaryStage.setOnCloseRequest(event -> calculatingMove.interrupt());
-        // TODO: 6/19/18 доделать!
         primaryStage.show();
     }
 
