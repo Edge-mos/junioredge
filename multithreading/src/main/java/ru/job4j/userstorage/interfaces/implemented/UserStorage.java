@@ -24,7 +24,7 @@ public class UserStorage<T extends User> implements Istore<T> {
     @Override
     public boolean add(T user) {
         synchronized (storage) {
-            User tmp = UserStorage.this.storage.putIfAbsent(user.getId(), user);
+            User tmp = this.storage.putIfAbsent(user.getId(), user);
             return tmp == null;
         }
     }
@@ -32,14 +32,14 @@ public class UserStorage<T extends User> implements Istore<T> {
     @Override
     public boolean update(T user, T updated) {
         synchronized (storage) {
-            return UserStorage.this.storage.replace(user.getId(), user, updated);
+            return this.storage.replace(user.getId(), user, updated);
         }
     }
 
     @Override
     public boolean delete(T user) {
         synchronized (storage) {
-            return UserStorage.this.storage.remove(user.getId(), user);
+            return this.storage.remove(user.getId(), user);
         }
     }
 
@@ -49,7 +49,7 @@ public class UserStorage<T extends User> implements Istore<T> {
             User fromUser = UserStorage.this.storage.get(from);
             User toUser = UserStorage.this.storage.get(to);
             return fromUser != null && toUser != null
-                    && UserStorage.this.canTransfer(fromUser, toUser, amount);
+                    && this.canTransfer(fromUser, toUser, amount);
         }
     }
 

@@ -21,59 +21,36 @@ public class SyncronizedArrayList<T> implements SyncList<T> {
     }
 
     @Override
-    public void add(T value) {
-        Thread addThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SyncronizedArrayList.this.checkCapacity();
-                synchronized (monitor) {
-                    SyncronizedArrayList.this.values[index++] = value;
-                    SyncronizedArrayList.this.threadSleep();
-                }
-            }
-        });
-        this.threadProcess(addThread);
+    public void  add(T value) {
+        // TODO: 7/9/18 почему racecondition?
+
+        synchronized (monitor) {
+            this.checkCapacity();
+            this.values[index++] = value;
+        }
     }
 
     @Override
     public T get(int index) {
-        final Object[] result = new Object[1];
-        Thread getThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SyncronizedArrayList.this.checkCapacity();
-                synchronized (monitor) {
-                    result[0] = SyncronizedArrayList.this.values[index];
-                    SyncronizedArrayList.this.threadSleep();
-                }
-            }
-        });
-        this.threadProcess(getThread);
-        return ((T) result[0]);
+        synchronized (monitor) {
+            this.checkRange(index);
+            return ((T) this.values[index]);
+        }
     }
 
     @Override
     public void delete(int position) {
-        Thread deleteThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (monitor) {
-                    SyncronizedArrayList.this.checkRange(position);
-                    System.arraycopy(values, position + 1, values, position, values.length - 1 - position);
-                    values[values.length - 1] = null;
-                    SyncronizedArrayList.this.index--;
-                    SyncronizedArrayList.this.threadSleep();
-                }
-            }
-        });
-        this.threadProcess(deleteThread);
+        synchronized (monitor) {
+            this.checkRange(position);
+            System.arraycopy(values, position + 1, values, position, values.length - 1 - position);
+            values[values.length - 1] = null;
+            this.index--;
+        }
     }
 
     @Override
     public int size() {
-        synchronized (monitor) {
-            return this.values.length;
-        }
+        return this.index;
     }
 
     private void checkRange(int index) {
@@ -85,28 +62,10 @@ public class SyncronizedArrayList<T> implements SyncList<T> {
     }
 
     private void checkCapacity() {
-        if (this.index >= this.size()) {
-            synchronized (monitor) {
+        synchronized (monitor) {
+            if (this.size() >= this.values.length) {
                 this.values = Arrays.copyOf(this.values, this.size() * 2);
             }
-        }
-    }
-
-    private void threadSleep() {
-        try {
-            Thread.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void threadProcess(Thread thread) {
-        thread.start();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            System.out.println("Interrupt exeption");
-            e.printStackTrace();
         }
     }
 
