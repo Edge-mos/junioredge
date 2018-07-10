@@ -6,12 +6,9 @@ import ru.job4j.threadsafe.interfaces.SyncList;
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 
-import static org.junit.Assert.*;
-
-public class SyncronizedArrayListTest {
+public class SyncronizedLinkedListTest {
 
     private class ThreadAdd extends Thread {
         private final SyncList<Integer> list;
@@ -49,7 +46,7 @@ public class SyncronizedArrayListTest {
 
     @Test
     public void whenAddIn2Threads() throws InterruptedException {
-        final SyncList<Integer> list = new SyncronizedArrayList<>(2);
+        final SyncList<Integer> list = new SyncronizedLinkedList<>();
         Thread thread1 = new ThreadAdd(list, 1, 2);
         Thread thread2 = new ThreadAdd(list, 3, 4, 5);
         thread1.start();
@@ -68,12 +65,11 @@ public class SyncronizedArrayListTest {
         }
 
         assertThat(list.size(), is(5));
-
     }
 
     @Test
     public void whenAddAndDeleteIn2Threads() throws InterruptedException {
-        final SyncList<Integer> list = new SyncronizedArrayList<>(5);
+        final SyncList<Integer> list = new SyncronizedLinkedList<>();
         Thread thread1 = new ThreadAdd(list, 1, 2, 3, 4, 5);
         Thread thread2 = new ThreadDelete(list, 3, 2, 1, 0);
         thread1.start();
@@ -87,7 +83,7 @@ public class SyncronizedArrayListTest {
 
     @Test(expected = NoSuchElementException.class)
     public void iteratorTest() throws InterruptedException {
-        final SyncList<Integer> list = new SyncronizedArrayList<>(5);
+        final SyncList<Integer> list = new SyncronizedLinkedList<>();
         Thread thread1 = new ThreadAdd(list, 1, 2, 3, 4, 5);
         thread1.start();
         thread1.join();
@@ -109,7 +105,7 @@ public class SyncronizedArrayListTest {
 
     @Test(expected = ConcurrentModificationException.class)
     public void whenConcurrentModificationExeptionOccured() throws InterruptedException {
-        final SyncList<Integer> list = new SyncronizedArrayList<>(5);
+        final SyncList<Integer> list = new SyncronizedLinkedList<>();
         Thread thread1 = new ThreadAdd(list, 1, 2, 3, 4, 5);
         thread1.start();
         thread1.join();
@@ -117,5 +113,4 @@ public class SyncronizedArrayListTest {
             list.delete(1);
         }
     }
-
 }

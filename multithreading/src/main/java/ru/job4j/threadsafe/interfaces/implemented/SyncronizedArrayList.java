@@ -5,9 +5,15 @@ import net.jcip.annotations.ThreadSafe;
 import ru.job4j.threadsafe.interfaces.SyncList;
 
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/**SyncronizedArrayList
+ * @author Vladimir Yamnikov (Androedge@gmail.com).
+ * @version $1.0$.
+ * @since 10.07.2018.
+ */
 @ThreadSafe
 public class SyncronizedArrayList<T> implements SyncList<T> {
 
@@ -22,7 +28,6 @@ public class SyncronizedArrayList<T> implements SyncList<T> {
 
     @Override
     public void  add(T value) {
-        // TODO: 7/9/18 почему racecondition?
 
         synchronized (monitor) {
             this.checkCapacity();
@@ -30,7 +35,9 @@ public class SyncronizedArrayList<T> implements SyncList<T> {
         }
     }
 
+
     @Override
+    @SuppressWarnings("unchecked")
     public T get(int index) {
         synchronized (monitor) {
             this.checkRange(index);
@@ -50,7 +57,10 @@ public class SyncronizedArrayList<T> implements SyncList<T> {
 
     @Override
     public int size() {
-        return this.index;
+        synchronized (monitor) {
+            return this.index;
+        }
+
     }
 
     private void checkRange(int index) {
@@ -81,25 +91,46 @@ public class SyncronizedArrayList<T> implements SyncList<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new ArrayIterator<>();
+        synchronized (monitor) {
+            return new ArrayIterator<>();
+        }
     }
 
     private class ArrayIterator<T> implements Iterator<T> {
         private int itIndex;
+        private final int expectedModCount;
 
-        @Override
-        public boolean hasNext() {
-            return this.itIndex < SyncronizedArrayList.this.size();
+        ArrayIterator() {
+            synchronized (monitor) {
+                this.expectedModCount = SyncronizedArrayList.this.size();
+            }
         }
 
         @Override
+        public boolean hasNext() {
+            synchronized (monitor) {
+                return this.itIndex < SyncronizedArrayList.this.size();
+            }
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
         public T next() {
-            if (this.hasNext()) {
-                synchronized (monitor) {
+            synchronized (monitor) {
+                this.checkForModification();
+                if (this.hasNext()) {
                     return ((T) SyncronizedArrayList.this.values[itIndex++]);
                 }
+                throw new NoSuchElementException();
             }
-            throw new NoSuchElementException();
+        }
+
+        final void checkForModification() {
+            synchronized (monitor) {
+                if (SyncronizedArrayList.this.size() != this.expectedModCount) {
+                    throw new ConcurrentModificationException();
+                }
+            }
         }
     }
 }
