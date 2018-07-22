@@ -2,6 +2,9 @@ package ru.job4j.threadpool;
 
 import org.junit.Test;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import static org.junit.Assert.*;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.is;
