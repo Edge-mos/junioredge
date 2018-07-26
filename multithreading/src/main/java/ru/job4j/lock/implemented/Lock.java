@@ -13,10 +13,16 @@ import ru.job4j.lock.interfaces.SimpleLock;
 public class Lock implements SimpleLock {
     private volatile boolean isLocked = false;
     @Override
-    public void lock() throws InterruptedException {
+    public void lock() {
         synchronized (this) {
             while (this.isLocked) {
-                this.wait();
+                try {
+
+                    this.wait();
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             this.isLocked = true;
         }
