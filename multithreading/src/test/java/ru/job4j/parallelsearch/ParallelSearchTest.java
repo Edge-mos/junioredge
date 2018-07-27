@@ -17,15 +17,10 @@ public class ParallelSearchTest {
     public void test() throws IOException, InterruptedException {
         ParallelSearch parallelSearch = new ParallelSearch("/home/edge/Edge-mos/Search", "Ubuntu555",
                 Arrays.asList("txt", "xml", "html"));
-//        parallelSearch.searchFiles();
-//        parallelSearch.readFiles();
         parallelSearch.init();
         for (String s : parallelSearch.result()) {
             System.out.println(s);
         }
-
-
-
     }
 
 }

@@ -25,89 +25,72 @@ public class ParallelSearch {
     private final String text;
     private final List<String> types;
     private Lock lock1 = new Lock();
-    private Lock lock2 = new Lock();
+    volatile boolean finishSearch = false;
 
     @GuardedBy("this")
     private final Queue<String> files = new LinkedList<>();
 
-    @GuardedBy("this")
     private final List<String> paths = new ArrayList<>();
 
     public ParallelSearch(String root, String text, List<String> exts) {
         this.root = root;
         this.text = text;
         this.types = this.setPatterns(exts);
-
     }
-
-//    public void searchFiles() throws IOException {
-//        Path filePath = Paths.get(this.root);
-//        FileVisitor fileVisitor = new FileVisitor(types);
-//        Files.walkFileTree(filePath, fileVisitor);
-//        for (Path path : fileVisitor.searchResult()) {
-//            this.files.add(path.toString());
-//        }
-//    }
-//
-//    public void readFiles() throws IOException {
-//        while (this.files.size() != 0) {
-//            Path filePath = Paths.get(this.files.poll());
-//            BufferedReader br = Files.newBufferedReader(filePath);
-//            String str;
-//
-//            while ((str = br.readLine()) != null) {
-//                if (str.contains(this.text)) {
-//                    this.paths.add(filePath.toString());
-//                    break;
-//                }
-//            }
-//        }
-//    }
 
     public void init() throws InterruptedException {
         Thread search = new Thread() {
             @Override
             public void run() {
-                ParallelSearch.this.lock1.lock();
+                System.out.println("Стартует поток search");
+
                 Path filePath = Paths.get(ParallelSearch.this.root);
                 FileVisitor fileVisitor = new FileVisitor(ParallelSearch.this.types);
 
                 try {
                     Files.walkFileTree(filePath, fileVisitor);
                     for (Path path : fileVisitor.searchResult()) {
+                        ParallelSearch.this.lock1.lock();
                         ParallelSearch.this.files.add(path.toString());
+                        ParallelSearch.this.lock1.unlock();
                     }
-                    ParallelSearch.this.lock1.unlock();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                ParallelSearch.this.finishSearch = true;
+                System.out.println("Поток search завершён");
             }
         };
 
         Thread read = new Thread() {
             @Override
             public void run() {
+                System.out.println("Стартует поток read");
 
-                try {
-                    ParallelSearch.this.lock1.lock();
-                    while (ParallelSearch.this.files.size() != 0) {
-                        Path filePath = Paths.get(ParallelSearch.this.files.poll());
-                        BufferedReader br = Files.newBufferedReader(filePath);
-                        ParallelSearch.this.lock1.unlock();
+                while (!ParallelSearch.this.finishSearch) {
 
-                        ParallelSearch.this.lock2.lock();
-                        String str;
-                        while ((str = br.readLine()) != null) {
-                            if (str.contains(ParallelSearch.this.text)) {
-                                ParallelSearch.this.paths.add(filePath.toString());
-                                break;
+                    try {
+                        while (ParallelSearch.this.files.size() != 0) {
+
+                            ParallelSearch.this.lock1.lock();
+                            Path filePath = Paths.get(ParallelSearch.this.files.poll());
+                            ParallelSearch.this.lock1.unlock();
+
+                            BufferedReader br = Files.newBufferedReader(filePath);
+                            String str;
+                            while ((str = br.readLine()) != null) {
+                                if (str.contains(ParallelSearch.this.text)) {
+                                    ParallelSearch.this.paths.add(filePath.toString());
+                                    break;
+                                }
                             }
                         }
-                        ParallelSearch.this.lock2.unlock();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
                     }
-                } catch (IOException e1) {
-                    e1.printStackTrace();
                 }
+                System.out.println("Поток read завершён");
             }
         };
         search.start();
