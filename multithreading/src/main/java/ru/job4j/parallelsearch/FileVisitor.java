@@ -5,7 +5,11 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.LinkedList;
 import java.util.List;
-
+/**FileVisitor.
+ * @author Vladimir Yamnikov (Androedge@gmail.com).
+ * @version $1.0$.
+ * @since 23.07.2018.
+ */
 public class FileVisitor extends SimpleFileVisitor<Path> {
     private PathMatcher matcher;
     private List<String> extensions;
