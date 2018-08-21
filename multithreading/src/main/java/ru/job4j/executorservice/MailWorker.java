@@ -3,6 +3,8 @@ package ru.job4j.executorservice;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.ToDoubleFunction;
+
 /**MailWorker<T extends User>
  * @author Vladimir Yamnikov (Androedge@gmail.com).
  * @version $1.0$.
@@ -42,6 +44,7 @@ public class MailWorker<T extends User> {
                 e.printStackTrace();
             }
         }
+
     }
 
 

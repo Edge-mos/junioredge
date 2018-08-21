@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**ParallelSearch.
  * @author Vladimir Yamnikov (Androedge@gmail.com).
@@ -21,16 +23,35 @@ import java.util.Queue;
  */
 @ThreadSafe
 public class ParallelSearch {
+    /**
+     * путь до файла.
+     */
     private final String root;
+    /**
+     * текст для поиска.
+     */
     private final String text;
+    /**
+     * расширения.
+     */
     private final List<String> types;
     private Lock lock1 = new Lock();
-    volatile boolean finishSearch = false;
+    /**
+     * проверка на завершение потока.
+     */
+    private volatile boolean finishSearch = false;
 
+    /**
+     * Список для добавления путей к файлам, которые были найдены по расширению.
+     */
     @GuardedBy("this")
     private final Queue<String> files = new LinkedList<>();
 
+    /**
+     * Список путей к файлам, в которых найдено ключевое слово.
+     */
     private final List<String> paths = new ArrayList<>();
+
 
     public ParallelSearch(String root, String text, List<String> exts) {
         this.root = root;
@@ -68,27 +89,14 @@ public class ParallelSearch {
             public void run() {
                 System.out.println("Стартует поток read");
 
-                while (!ParallelSearch.this.finishSearch) {
+                while (!ParallelSearch.this.finishSearch || !ParallelSearch.this.files.isEmpty()) {
+                        ParallelSearch.this.lock1.lock();
+                        String path = ParallelSearch.this.files.poll();
+                        ParallelSearch.this.lock1.unlock();
 
-                    try {
-                        while (ParallelSearch.this.files.size() != 0) {
-
-                            ParallelSearch.this.lock1.lock();
-                            Path filePath = Paths.get(ParallelSearch.this.files.poll());
-                            ParallelSearch.this.lock1.unlock();
-
-                            BufferedReader br = Files.newBufferedReader(filePath);
-                            String str;
-                            while ((str = br.readLine()) != null) {
-                                if (str.contains(ParallelSearch.this.text)) {
-                                    ParallelSearch.this.paths.add(filePath.toString());
-                                    break;
-                                }
-                            }
+                        if (path != null) {
+                            ParallelSearch.this.searchWord(Paths.get(path));
                         }
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
                 }
                 System.out.println("Поток read завершён");
             }
@@ -99,7 +107,17 @@ public class ParallelSearch {
         read.join();
     }
 
-    synchronized List<String> result() {
+    private void searchWord(Path path) {
+
+        try (Stream<String> stringStream = Files.lines(path)) {
+            boolean res = stringStream.anyMatch(s -> s.contains(this.text));
+            if (res) this.paths.add(path.toString());
+        } catch (IOException e) {
+            System.out.println("No file!");
+        }
+    }
+
+    public List<String> result() {
         return this.paths;
     }
 

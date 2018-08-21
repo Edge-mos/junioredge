@@ -11,18 +11,21 @@ import java.util.List;
  * @since 23.07.2018.
  */
 public class FileVisitor extends SimpleFileVisitor<Path> {
+    /**
+     * Объект, проверяющий совпадения.
+     */
     private PathMatcher matcher;
+    /**
+     * Список расширений для поиска.
+     */
     private List<String> extensions;
+    /**
+     * Результаты поиска.
+     */
     private List<Path> result = new LinkedList<>();
 
     public FileVisitor(List<String> extensions) {
         this.extensions = extensions;
-    }
-
-    @Override
-    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-        this.findMany(dir);
-        return FileVisitResult.CONTINUE;
     }
 
     @Override
