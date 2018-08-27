@@ -53,6 +53,7 @@ public class SimpleBlockingQueueTest {
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
+
             }
         }
 
@@ -74,7 +75,7 @@ public class SimpleBlockingQueueTest {
         producer.start();
         producer.join();
 
-        //consumer.join();
+        consumer.join();
 
         System.out.println(queue);
         System.out.println("Size After: " + queue.size());
