@@ -8,10 +8,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 @ThreadSafe
 public class SimpleBlockingQueue<T> implements SimpleBlock<T> {
-    @GuardedBy("lock")
+    @GuardedBy("queue")
     private final Queue<T> queue = new LinkedList<>();
-    private int capacity;
-    private final Object lock = new Object();
+    private final int capacity;
+
 
     public SimpleBlockingQueue(int capacity) {
         this.capacity = capacity;
@@ -20,41 +20,41 @@ public class SimpleBlockingQueue<T> implements SimpleBlock<T> {
 
     @Override
     public boolean offer(T obj) {
-        synchronized (this.lock) {
-            while(this.queue.size() == this.capacity) {
+        synchronized (this.queue) {
+            while(this.queue.size() >= this.capacity) {
                 try {
                     System.out.println("Заполнение!");
-                    this.lock.wait();
+                    this.queue.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
             boolean result = this.queue.add(obj);
-            this.lock.notify();
+            this.queue.notify();
             return result;
         }
     }
 
     @Override
     public T poll() {
-        synchronized (this.lock) {
-            while (this.queue.size() == 0) {
+        synchronized (this.queue) {
+            while (this.queue.isEmpty()) {
                 try {
                     System.out.println("WAITING");
-                    this.lock.wait();
+                    this.queue.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
             T val = this.queue.poll();
-            this.lock.notify();
+            this.queue.notify();
             return val;
         }
     }
 
     @Override
     public int size() {
-        synchronized (this.lock) {
+        synchronized (this.queue) {
             return this.queue.size();
         }
     }

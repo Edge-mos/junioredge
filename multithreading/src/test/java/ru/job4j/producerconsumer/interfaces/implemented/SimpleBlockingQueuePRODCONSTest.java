@@ -4,42 +4,56 @@ import org.junit.Test;
 import ru.job4j.producerconsumer.interfaces.SimpleBlock;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+
 
 
 public class SimpleBlockingQueuePRODCONSTest {
-    private SimpleBlock<Integer> blockingQueue = new SimpleBlockingQueue<>(5);
-    private int[] outerData = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    private List<Integer> destination = new ArrayList<>();
-    private Thread producer = new Thread(new Producer(blockingQueue, outerData));
-    private Consumer consumer = new Consumer(blockingQueue, destination);
+
 
 
     @Test
     public void test() throws InterruptedException {
+        SimpleBlock<Integer> blockingQueue = new SimpleBlockingQueue<>(5);
+        List<Integer> outerData = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        List<Integer> destination = new ArrayList<>();
+        Thread producer = new Thread(new Producer(blockingQueue, outerData));
+        Consumer consumer = new Consumer(blockingQueue, destination);
+
 
         producer.start();
         consumer.start();
 
-        producer.join();
-        consumer.join();
 
+        while (true) {
+            if (!producer.isAlive()) {
+                if (blockingQueue.size() == 0) {
+                    consumer.interrupt();
+                    break;
+                }
+            }
+        }
 
 
 
         System.out.println("Blocking size: " + blockingQueue.size());
-        System.out.println("Result = " + this.destination);
+        System.out.println("Consumer status: " + consumer.isAlive());
+        System.out.println("Result = " + destination);
+        assertThat(outerData, is(destination));
+        assertThat(outerData.size(), is(destination.size()));
     }
 
 }
 
 class Producer implements Runnable {
     private SimpleBlock<Integer> blockingQueue;
-    private int[] data;
+    private List<Integer> data;
 
 
-    public Producer(SimpleBlock<Integer> blockingQueue, int[] outerData) {
+    public Producer(SimpleBlock<Integer> blockingQueue, List<Integer> outerData) {
         this.blockingQueue = blockingQueue;
         this.data = outerData;
     }
@@ -68,14 +82,10 @@ class Consumer extends Thread {
     @Override
     public void run() {
 
-        while (this.isProceed) {
+        while (!isInterrupted()) {
             int result = this.blockingQueue.poll();
             System.out.println(result);
             this.destination.add(result);
         }
-    }
-
-    public void shutDown(boolean res) {
-
     }
 }
