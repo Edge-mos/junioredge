@@ -25,8 +25,9 @@ public class NonBlockingCache<T extends Base> implements Cache<T> {
             } else throw new OptimisticExeption("Same version or older!");
         }));
         final boolean[] result = {false};
-        obj.ifPresent(t -> result[0] = true);
-       return result[0];
+//        obj.ifPresent(t -> result[0] = true);
+//       return result[0];
+        return obj.isPresent();
     }
 
     @Override

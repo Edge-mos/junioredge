@@ -13,8 +13,6 @@ import static org.junit.Assert.*;
 
 public class SimpleBlockingQueuePRODCONSTest {
 
-
-
     @Test
     public void test() throws InterruptedException {
         SimpleBlock<Integer> blockingQueue = new SimpleBlockingQueue<>(5);
@@ -36,7 +34,6 @@ public class SimpleBlockingQueuePRODCONSTest {
                 }
             }
         }
-
 
 
         System.out.println("Blocking size: " + blockingQueue.size());
@@ -83,9 +80,9 @@ class Consumer extends Thread {
     public void run() {
 
         while (!isInterrupted()) {
-            int result = this.blockingQueue.poll();
-            System.out.println(result);
-            this.destination.add(result);
+           // int result = this.blockingQueue.poll();
+           // System.out.println(result);
+           /// this.destination.add(result);
         }
     }
 }

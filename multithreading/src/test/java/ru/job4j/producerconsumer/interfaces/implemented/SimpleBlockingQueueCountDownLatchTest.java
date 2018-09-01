@@ -74,7 +74,7 @@ class PollThread implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println(this.blockQueue.poll());
+            //System.out.println(this.blockQueue.poll());
             if (this.blockQueue.size() == 0) {
                 this.isRunning = false;
             }

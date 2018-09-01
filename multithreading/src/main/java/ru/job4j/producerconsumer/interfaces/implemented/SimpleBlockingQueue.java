@@ -36,15 +36,12 @@ public class SimpleBlockingQueue<T> implements SimpleBlock<T> {
     }
 
     @Override
-    public T poll() {
+    public T poll() throws InterruptedException {
         synchronized (this.queue) {
             while (this.queue.isEmpty()) {
-                try {
-                    System.out.println("WAITING");
-                    this.queue.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                System.out.println("WAITING");
+                this.queue.wait();
+
             }
             T val = this.queue.poll();
             this.queue.notify();
