@@ -1,0 +1,119 @@
+﻿--Создание базы данных system_items
+CREATE DATABASE system_items;
+
+--Создаём таблицу users
+CREATE TABLE users(
+user_id SERIAL PRIMARY KEY,
+login VARCHAR(30) UNIQUE,
+password VARCHAR(30),
+registration DATE,
+role_id INT
+);
+
+--Создаём таблицу role
+CREATE TABLE role(
+role_id SERIAL PRIMARY KEY,
+role_desc VARCHAR(30)  --admin, user, read only
+);
+
+--Связываем таблицу role c users. У role может быть много пользователей, но у пользователя 
+--может быть только 1 роль. role many-to-one users
+ALTER TABLE users
+ADD CONSTRAINT role_users_fk
+FOREIGN KEY (role_id) REFERENCES role(role_id);
+
+--Создаём таблицу rules
+CREATE TABLE rules(
+rule_id SERIAL PRIMARY KEY,
+rule_desc VARCHAR(50)  --full access, item addition, item delete, read, write
+);
+
+--Создаём соединительную таблицу role_rules для реализации связи many-to-many между таблицами
+--role и rules
+CREATE TABLE role_rules(
+role_id INT,
+rule_id INT,
+PRIMARY KEY (role_id, rule_id),
+CONSTRAINT role_role_rules_fk
+FOREIGN KEY (role_id) REFERENCES role(role_id),
+CONSTRAINT rules_role_rules_fk
+FOREIGN KEY (rule_id) REFERENCES rules(rule_id)
+);
+
+--Создаём таблицу статус заявки status
+CREATE TABLE status(
+status_id SERIAL PRIMARY KEY,
+status_desc VARCHAR(6) --active, closed
+);
+
+--Создаём таблицу категории заявки category
+CREATE TABLE category(
+category_id SERIAL PRIMARY KEY,
+category_desc VARCHAR (6) -- urgent, normal
+);
+
+--Создаём таблицу attachs
+CREATE TABLE attachs(
+attach_id SERIAL PRIMARY KEY,
+attach_desc VARCHAR(10) --file, image, git
+);
+
+--Создаём таблицу заявок item
+CREATE TABLE item(
+item_id SERIAL PRIMARY KEY,                         --номер заявки
+user_id INT REFERENCES users(user_id),              --users one-to-many item
+create_date DATE,
+comment TEXT,
+status_id INT REFERENCES status(status_id),         --item one-to-many status
+category_id INT REFERENCES category(category_id)   --item one-to-many category
+);
+
+--Сама заявка может содержать множество приложенных файлов, ф файлы быть во множестве
+--заявок
+--Создаём вспомогательную таблицу item_attachs для реализации связи many-to-many
+
+CREATE TABLE item_attachs(
+item_id INT REFERENCES item(item_id),
+attach_id INT REFERENCES attachs(attach_id),
+PRIMARY KEY(item_id, attach_id)
+);
+
+-- ПЕРВИЧНОЕ ЗАПОЛНЕНИЕ ТАБЛИЦ
+INSERT INTO role(role_desc)
+VALUES ('admin'), ('user'), ('read_only');
+
+INSERT INTO rules(rule_desc)
+VALUES ('full_access'), ('item_addition'), ('item_delete'), ('read'), ('write');
+
+INSERT INTO attachs(attach_desc)
+VALUES ('file'), ('image'), ('git');
+
+INSERT INTO category(category_desc)
+VALUES ('urgent'), ('normal');
+
+INSERT INTO status(status_desc)
+VALUES ('active'), ('closed');
+
+--ДОБАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯ
+INSERT INTO users(login, password, registration, role_id)
+VALUES ('arsentev', 'root', '2018-09-17', 1);
+
+INSERT INTO role_rules(role_id, rule_id)
+VALUES (1, 1), (1, 2), (1, 3), (1, 4), (1, 5);
+
+--ДОБАВЛЕНИЕ ЗАЯВКИ ПОЛЬЗОВАТЕЛЯ
+INSERT INTO item(user_id, create_date, comment, status_id, category_id)
+VALUES (1, '2018-09-17', 'Добавлено новое задание, подробности во вложенных файлах', 1, 1);
+INSERT INTO item_attachs(item_id, attach_id)
+VALUES (1, 1), (1, 2);
+
+--ДОБАВЛЕНИЕ 2 ПОЛЬЗОВАТЕЛЯ
+INSERT INTO users(login, password, registration, role_id)
+VALUES ('edge', 'Assault', '2018-09-17', 2);
+INSERT INTO role_rules(role_id, rule_id)
+VALUES (2, 2), (2, 4), (2, 5);
+INSERT INTO item(user_id, create_date, comment, status_id, category_id)
+VALUES (2, '2018-09-17', 'Задание выполнил, прошу проверить', 1, 2);
+INSERT INTO item_attachs(item_id, attach_id)
+VALUES (2, 3);
+

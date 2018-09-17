@@ -12,6 +12,7 @@
     <modules>
         <module>collectionspro</module>
         <module>multithreading</module>
+        <module>SQLJDBC</module>
     </modules>
 
     <properties>
