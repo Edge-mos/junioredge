@@ -26,6 +26,7 @@ public class Controller {
     private EntriesHandler handler = new EntriesHandler();
     private Parser saxParser = new Parser(this.handler);
 
+
     /**
      * Создание базы данных, если не созданна.
      */
