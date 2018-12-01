@@ -3,18 +3,15 @@ package ru.job4j.trackerjdbc.interfaces.implemented;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import ru.job4j.trackerjdbc.interfaces.Process;
 import ru.job4j.trackerjdbc.model.Item;
-import ru.job4j.trackerjdbc.interfaces.Connect;
-import ru.job4j.trackerjdbc.interfaces.InitConfig;
 
 import java.sql.Date;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class TrackerTest {
     private Tracker tracker;
@@ -103,4 +100,5 @@ public class TrackerTest {
         assertThat(result.get(0), is(new Item(3, "Проверка", "Учёт", Date.valueOf("2018-10-03"), "в конце дня")
         ));
     }
+
 }
