@@ -68,6 +68,11 @@ public class Tracker implements Process {
         }
     }
 
+    /**
+     * Команда SELECT * возвращает ResultSet(а по нему надо пробегаться) поэтому переключаем режим ResultSet и выбираем rs.first().
+     * @param id
+     * @return
+     */
     @Override
     public Item findById(int id) {
         Item result = null;
